@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Java Study Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Muted Teal Accent -->
+    <!-- Application Structure Plan: A tab-based SPA with three main sections: "Core Concepts" for review, an interactive "Operators Deep Dive" with clickable cards to reveal details, and a "Knowledge Check" quiz to foster active learning. This structure is chosen over a linear document to break down information into manageable topics, allow non-linear exploration, and improve user engagement and knowledge retention through interactivity, which is more effective for study material. -->
+    <!-- Visualization & Content Choices: Report Info: Operator types -> Goal: Organize & Compare -> Viz/Presentation: Interactive HTML/CSS grid of cards -> Interaction: Click to reveal details in a modal-like view -> Justification: Prevents information overload, encourages exploration. Report Info: Quiz questions -> Goal: Test Knowledge -> Viz/Presentation: HTML/CSS quiz interface with a Chart.js donut chart for final score summary -> Interaction: User selects answers, gets immediate feedback, progresses through questions -> Justification: Active recall enhances learning; visual score summary is engaging and provides clear feedback. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #3f3c3a;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: #147a73;
+            border-bottom: 2px solid #147a73;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .concept-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .operator-card {
+            background-color: #FFFFFF;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .operator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .quiz-option-btn {
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .quiz-option-btn:hover:not(:disabled) {
+            background-color: #F3F4F6;
+        }
+        .quiz-option-btn.correct {
+            background-color: #D1FAE5;
+            border-color: #10B981;
+        }
+        .quiz-option-btn.incorrect {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+        }
+        .code-block {
+            background-color: #F3F4F6;
+            color: #111827;
+            font-family: monospace;
+        }
+        #operator-modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-white shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-3xl font-bold text-center text-[#147a73]">Interactive Java Study Guide</h1>
+            <p class="text-center text-gray-500 mt-1">An engaging way to master the fundamentals of Java.</p>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b border-gray-200">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-center space-x-8">
+                <a href="#" class="nav-link active text-gray-500 hover:text-[#147a73] py-4 px-1 text-sm font-medium" data-target="concepts">Core Concepts</a>
+                <a href="#" class="nav-link text-gray-500 hover:text-[#147a73] py-4 px-1 text-sm font-medium" data-target="operators">Operators Deep Dive</a>
+                <a href="#" class="nav-link text-gray-500 hover:text-[#147a73] py-4 px-1 text-sm font-medium" data-target="quiz">Knowledge Check</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <section id="concepts" class="content-section active">
+            <h2 class="text-2xl font-semibold mb-2">Core Java Concepts</h2>
+            <p class="text-gray-600 mb-8">This section provides a summary of basic Java syntax and structure. Review these fundamental building blocks to strengthen your understanding before moving on to more complex topics.</p>
+            <div class="space-y-6">
+                <div class="concept-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-[#147a73]">"Hello World" Output</h3>
+                    <p class="mb-4">The standard way to print text to the console in Java. `println` automatically adds a new line after the output.</p>
+                    <div class="code-block rounded-md p-4 text-sm">
+                        System.out.println("Hello World");
+                    </div>
+                </div>
+                <div class="concept-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-[#147a73]">Comments</h3>
+                    <p class="mb-4">Comments are used to explain code and are ignored by the compiler. Java supports single-line and multi-line comments.</p>
+                    <p class="font-medium">Single-line comment:</p>
+                    <div class="code-block rounded-md p-4 text-sm mb-4">
+                        // This is a single-line comment
+                    </div>
+                    <p class="font-medium">Multi-line comment:</p>
+                    <div class="code-block rounded-md p-4 text-sm">
+                        /* <br>
+                         &nbsp; This is a multi-line comment. <br>
+                         &nbsp; It can span across several lines. <br>
+                        */
+                    </div>
+                </div>
+                <div class="concept-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-[#147a73]">Class Declaration</h3>
+                    <p class="mb-4">A class is a blueprint for creating objects. The `public` keyword is an access modifier, meaning the class is accessible by any other class.</p>
+                    <div class="code-block rounded-md p-4 text-sm">
+                        public class MyClassName {<br>
+                        &nbsp; &nbsp; // fields and methods go here<br>
+                        }
+                    </div>
+                </div>
+                 <div class="concept-card rounded-lg p-6">
+                    <h3 class="text-xl font-semibold mb-3 text-[#147a73]">`main` Method Parameters</h3>
+                    <p class="mb-4">The `main` method is the entry point of any Java application. `String[] args` is a parameter that allows you to pass arguments to your program from the command line.</p>
+                    <div class="code-block rounded-md p-4 text-sm">
+                       public static void main(String[] args) {<br>
+                        &nbsp; &nbsp; // Your program starts here<br>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="operators" class="content-section">
+            <h2 class="text-2xl font-semibold mb-2">Operators Deep Dive</h2>
+            <p class="text-gray-600 mb-8">Operators are special symbols that perform operations on variables and values. Click on each category card to explore the operators within it, see examples, and understand their functions.</p>
+            <div id="operator-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <section id="quiz" class="content-section">
+             <h2 class="text-2xl font-semibold mb-2">Knowledge Check</h2>
+            <p class="text-gray-600 mb-8">Test your understanding of the core concepts and operators with this short quiz. Select the best answer for each question to see if you've mastered the material.</p>
+            <div id="quiz-container" class="concept-card rounded-lg p-6 md:p-8">
+                <div id="quiz-progress" class="mb-4">
+                    <p id="progress-text" class="text-sm text-gray-600">Question 1 of 10</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                        <div id="progress-bar" class="bg-[#147a73] h-2.5 rounded-full" style="width: 10%"></div>
+                    </div>
+                </div>
+                <div id="quiz-content">
+                    <p id="quiz-question" class="text-lg font-medium mb-6">Question text goes here.</p>
+                    <div id="quiz-options" class="space-y-4"></div>
+                    <div id="quiz-feedback" class="mt-4 text-sm"></div>
+                    <button id="next-question-btn" class="hidden mt-6 w-full sm:w-auto bg-[#147a73] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#10635e] transition">Next Question</button>
+                </div>
+                <div id="quiz-results" class="hidden text-center">
+                    <h3 class="text-2xl font-bold mb-4">Quiz Complete!</h3>
+                    <p id="results-text" class="text-lg mb-6">You scored 8 out of 10.</p>
+                    <div class="chart-container relative w-full max-w-xs mx-auto h-64">
+                         <canvas id="results-chart"></canvas>
+                    </div>
+                    <button id="restart-quiz-btn" class="mt-8 bg-[#147a73] text-white font-semibold py-2 px-6 rounded-lg hover:bg-[#10635e] transition">Restart Quiz</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="operator-modal">
+        <div class="bg-white rounded-lg shadow-xl m-4 md:my-12 md:max-w-2xl md:mx-auto animate-scale-up">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 id="modal-title" class="text-xl font-semibold">Operator Details</h3>
+                <button id="modal-close-btn" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-6">
+                <p id="modal-description" class="mb-4 text-gray-600"></p>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operator</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Example</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-table-body" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    navLinks.forEach(navLink => navLink.classList.remove('active'));
+                    link.classList.add('active');
+
+                    const targetId = link.getAttribute('data-target');
+                    contentSections.forEach(section => {
+                        section.classList.remove('active');
+                        if (section.id === targetId) {
+                            section.classList.add('active');
+                        }
+                    });
+                });
+            });
+
+            const operatorData = [
+                {
+                    category: 'Arithmetic Operators',
+                    description: 'Used to perform mathematical calculations.',
+                    icon: '➕',
+                    operators: [
+                        { symbol: '+', name: 'Addition', example: 'a + b' },
+                        { symbol: '-', name: 'Subtraction', example: 'a - b' },
+                        { symbol: '*', name: 'Multiplication', example: 'a * b' },
+                        { symbol: '/', name: 'Division', example: 'a / b' },
+                        { symbol: '%', name: 'Modulus', example: 'a % b' }
+                    ]
+                },
+                {
+                    category: 'Relational Operators',
+                    description: 'Used to compare two operands and return a boolean value.',
+                    icon: '↔️',
+                    operators: [
+                        { symbol: '==', name: 'Equal to', example: 'a == b' },
+                        { symbol: '!=', name: 'Not equal to', example: 'a != b' },
+                        { symbol: '>', name: 'Greater than', example: 'a > b' },
+                        { symbol: '<', name: 'Less than', example: 'a < b' },
+                        { symbol: '>=', name: 'Greater than or equal to', example: 'a >= b' },
+                        { symbol: '<=', name: 'Less than or equal to', example: 'a <= b' }
+                    ]
+                },
+                 {
+                    category: 'Logical Operators',
+                    description: 'Used to combine or modify boolean expressions.',
+                    icon: '🧠',
+                    operators: [
+                        { symbol: '&&', name: 'Logical AND', example: 'exp1 && exp2' },
+                        { symbol: '||', name: 'Logical OR', example: 'exp1 || exp2' },
+                        { symbol: '!', name: 'Logical NOT', example: '!exp' },
+                        { symbol: '^', name: 'XOR', example: 'exp1 ^ exp2' }
+                    ]
+                },
+                {
+                    category: 'Assignment Operators',
+                    description: 'Used to assign values to variables.',
+                    icon: '=',
+                    operators: [
+                        { symbol: '=', name: 'Simple Assignment', example: 'a = 10' },
+                        { symbol: '+=', name: 'Addition Assignment', example: 'a += 5' },
+                        { symbol: '-=', name: 'Subtraction Assignment', example: 'a -= 5' },
+                        { symbol: '*=', name: 'Multiplication Assignment', example: 'a *= 5' },
+                        { symbol: '/=', name: 'Division Assignment', example: 'a /= 5' },
+                        { symbol: '%=', name: 'Modulus Assignment', example: 'a %= 5' },
+                        { symbol: '|=', name: 'OR Assignment', example: 'a |= 5' }
+                    ]
+                },
+                 {
+                    category: 'Increment/Decrement',
+                    description: 'Used to increment or decrement a value by 1.',
+                    icon: '📈',
+                    operators: [
+                        { symbol: '++', name: 'Increment', example: 'a++' },
+                        { symbol: '--', name: 'Decrement', example: 'a--' }
+                    ]
+                },
+                {
+                    category: 'Other Key Terms',
+                    description: 'Fundamental programming concepts related to operators and control flow.',
+                    icon: '🔑',
+                    operators: [
+                         { symbol: 'Expression', name: 'A combination of values, variables, and operators that computes to a single value.', example: 'int x = 5 + 3;' },
+                         { symbol: 'Decision Construct', name: 'Statements like if-else that allow a program to execute different code based on a condition.', example: 'if (x > 5) { ... }' },
+                         { symbol: 'Operator Precedence', name: 'The rules that determine the order in which operators are evaluated in an expression.', example: '2 + 3 * 4 // (is 14, not 20)' }
+                    ]
+                }
+            ];
+
+            const operatorGrid = document.getElementById('operator-grid');
+            const modal = document.getElementById('operator-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalDescription = document.getElementById('modal-description');
+            const modalTableBody = document.getElementById('modal-table-body');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            operatorData.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'operator-card rounded-lg p-6 border flex flex-col items-center justify-center text-center';
+                card.innerHTML = `<div class="text-4xl mb-3">${cat.icon}</div><h4 class="font-semibold text-lg">${cat.category}</h4>`;
+                card.addEventListener('click', () => {
+                    modalTitle.textContent = cat.category;
+                    modalDescription.textContent = cat.description;
+                    modalTableBody.innerHTML = '';
+                    cat.operators.forEach(op => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap"><code class="code-block text-sm p-1 rounded">${op.symbol}</code></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${op.name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap"><code class="text-sm">${op.example}</code></td>
+                        `;
+                        modalTableBody.appendChild(row);
+                    });
+                    modal.style.display = 'flex';
+                    modal.firstElementChild.scrollTop = 0;
+                });
+                operatorGrid.appendChild(card);
+            });
+            
+            modalCloseBtn.addEventListener('click', () => modal.style.display = 'none');
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+
+            const quizData = [
+                {
+                    question: "What is a correct syntax to output \"Hello World\" in Java?",
+                    options: ["System.out.println(\"Hello World\");", "echo \"Hello World\";", "print \"Hello World\";", "Console.Writeline(\"Hello World\");"],
+                    answer: "System.out.println(\"Hello World\");",
+                    explanation: "System.out.println() is the standard method in Java to print output to the console, followed by a new line."
+                },
+                {
+                    question: "Which of the following is NOT an arithmetic operator?",
+                    options: ["+", "*", "==", "%"],
+                    answer: "==",
+                    explanation: "'==' is a relational operator used to check for equality. The others are arithmetic operators."
+                },
+                {
+                    question: "What does the modulus operator '%' do?",
+                    options: ["Divides two numbers", "Multiplies two numbers", "Returns the remainder of a division", "Adds two numbers"],
+                    answer: "Returns the remainder of a division",
+                    explanation: "The modulus operator (%) calculates the remainder after integer division."
+                },
+                 {
+                    question: "What does the '++' operator do?",
+                    options: ["Adds two operands", "Increments a value by 1", "Checks for equality", "Subtracts two operands"],
+                    answer: "Increments a value by 1",
+                    explanation: "The increment operator (++) increases the value of its operand by one."
+                },
+                {
+                    question: "Which operator means 'not equal to'?",
+                    options: ["!=", "==", "=", "<="],
+                    answer: "!=",
+                    explanation: "The '!=' operator is the relational operator for 'not equal to'."
+                },
+                {
+                    question: "Java is short for 'JavaScript'.",
+                    options: ["True", "False"],
+                    answer: "False",
+                    explanation: "Java and JavaScript are two completely different programming languages with different syntax and use cases."
+                },
+                {
+                    question: "How do you insert multi-line COMMENTS in Java code?",
+                    options: ["/* ... */", "//", "/#", "-//-"],
+                    answer: "/* ... */",
+                    explanation: "Multi-line comments in Java start with /* and end with */."
+                },
+                {
+                    question: "Which operator is used for Short-circuit AND?",
+                    options: ["&", "|", "&&", "||"],
+                    answer: "&&",
+                    explanation: "The '&&' operator is the short-circuit AND. It doesn't evaluate the second operand if the first is false."
+                },
+                {
+                    question: "What is the function of the ternary if-then-else operator?",
+                    options: ["To perform a logical OR operation", "To evaluate a condition and return one of two values", "To invert a boolean value", "To perform a logical AND operation"],
+                    answer: "To evaluate a condition and return one of two values",
+                    explanation: "The ternary operator (condition ? value_if_true : value_if_false) is a shorthand for an if-else statement."
+                },
+                {
+                    question: "What is the purpose of short-circuit operators?",
+                    options: ["To perform operations faster", "To prevent unnecessary evaluations", "To combine boolean values", "To assign values"],
+                    answer: "To prevent unnecessary evaluations",
+                    explanation: "Short-circuit operators (&&, ||) can improve performance by avoiding the evaluation of the right-hand operand if the result is already determined by the left-hand one."
+                }
+            ];
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let resultsChartInstance = null;
+            
+            const quizContent = document.getElementById('quiz-content');
+            const quizResults = document.getElementById('quiz-results');
+            const questionEl = document.getElementById('quiz-question');
+            const optionsEl = document.getElementById('quiz-options');
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const nextBtn = document.getElementById('next-question-btn');
+            const restartBtn = document.getElementById('restart-quiz-btn');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+
+
+            function startQuiz() {
+                currentQuestionIndex = 0;
+                score = 0;
+                quizContent.style.display = 'block';
+                quizResults.style.display = 'none';
+                nextBtn.classList.add('hidden');
+                loadQuestion();
+            }
+
+            function loadQuestion() {
+                if (currentQuestionIndex >= quizData.length) {
+                    showResults();
+                    return;
+                }
+                
+                feedbackEl.innerHTML = '';
+                nextBtn.classList.add('hidden');
+                
+                const currentQuestion = quizData[currentQuestionIndex];
+                questionEl.textContent = currentQuestion.question;
+                optionsEl.innerHTML = '';
+
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = 'quiz-option-btn block w-full text-left p-4 border border-gray-300 rounded-lg';
+                    button.onclick = () => selectAnswer(button, option, currentQuestion.answer, currentQuestion.explanation);
+                    optionsEl.appendChild(button);
+                });
+                
+                updateProgress();
+            }
+
+            function selectAnswer(button, selectedOption, correctAnswer, explanation) {
+                const allOptions = optionsEl.querySelectorAll('button');
+                allOptions.forEach(btn => btn.disabled = true);
+                
+                if (selectedOption === correctAnswer) {
+                    button.classList.add('correct');
+                    feedbackEl.innerHTML = `<p class="text-green-600 font-medium">Correct!</p><p class="text-gray-600">${explanation}</p>`;
+                    score++;
+                } else {
+                    button.classList.add('incorrect');
+                    feedbackEl.innerHTML = `<p class="text-red-600 font-medium">Incorrect.</p><p class="text-gray-600">${explanation}</p>`;
+                    allOptions.forEach(btn => {
+                        if (btn.textContent === correctAnswer) {
+                            btn.classList.add('correct');
+                        }
+                    });
+                }
+                nextBtn.classList.remove('hidden');
+            }
+            
+            function updateProgress() {
+                const progressPercentage = ((currentQuestionIndex) / quizData.length) * 100;
+                progressText.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+                progressBar.style.width = `${progressPercentage}%`;
+            }
+
+
+            function showResults() {
+                quizContent.style.display = 'none';
+                quizResults.style.display = 'block';
+                document.getElementById('results-text').textContent = `You scored ${score} out of ${quizData.length}.`;
+                
+                const ctx = document.getElementById('results-chart').getContext('2d');
+                
+                if (resultsChartInstance) {
+                    resultsChartInstance.destroy();
+                }
+
+                resultsChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Correct', 'Incorrect'],
+                        datasets: [{
+                            data: [score, quizData.length - score],
+                            backgroundColor: ['#10B981', '#EF4444'],
+                            borderColor: ['#FDFBF8'],
+                            borderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                enabled: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentQuestionIndex++;
+                loadQuestion();
+            });
+
+            restartBtn.addEventListener('click', startQuiz);
+
+            startQuiz();
+        });
+    </script>
+</body>
+</html>
